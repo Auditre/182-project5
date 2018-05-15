@@ -18,7 +18,7 @@ public class Tree {
 	}
 	
 	
-	Node _find(int k, Node r){
+	private Node _find(int k, Node r){
 		
 		if(r == null || r.key == k)
 			return r;
@@ -159,21 +159,55 @@ public class Tree {
 		return _isChildOf(child, parent);
 	}
 	
-	private boolean _isChildOf(int c, int p){
-		Node parent = _find(p,root);
-		try{
-		Node child = _find(c, parent);
-		}catch(Exception e){
-			System.out.println("not a match, yo");
-			return false;
+	//For two given nodes x and y of a tree T,
+	//x is an ancestor of y if and only if x occurs before y in the preorder traversal of T
+	//and after y in the post-order traversal.
+	
+	private boolean _isChildOf(int child, int parent){
+		
+		if(_indexPosPreorder(root,parent) < _indexPosPreorder(root,child) && _indexPosPostorder(parent) > _indexPosPostorder(child))
+			return true;
+		return false;
+		
+	
+	}
+	
+	int _indexPosPreorder(Node r,int k){ //determines the index of the key in a preorder traversal
+		int count = 0;
+		
+		if(r != null){
+			if(r.key == k)
+				return count;
+			else if(r.leftChild != null)
+				count += 1 + _indexPosPreorder(r.leftChild,k);
+			else if(r.rightChild != null)
+				count += 1 + _indexPosPreorder(r.rightChild, k); 
+			return count;
 		}
+		return -1;
+	}
+	
+	private int _indexPosPostorder(int k){ //determines the index of the key in a postorder traversal
 		
-		
-		
-		return true;
+		return 0;
+	}
+	
+	
+	int maxLevel(){
+		return _maxLevel(root)-1;
+	}
+	
+	private int _maxLevel(Node r){
+		if(r != null){
+			if(r.leftChild == null || r.rightChild == null) //if either child is null, only return the parent.
+				return 1;
+			return 1 + Math.min(_maxLevel(r.leftChild), _maxLevel(r.rightChild)); //if the parent has two children, return the minimum of the child's vals to eleminate the one with a null child.
+		}
+		return 0;
 		
 	}
-
+	
+	
 	int[] toArray(){
 		Node current = root;
 		int height = 3;
